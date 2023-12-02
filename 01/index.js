@@ -1,3 +1,4 @@
+const performanceStart = performance.now();
 const JFile = require('jfile');
 const data = new JFile('data.txt');
 const numbersMap = {
@@ -32,4 +33,6 @@ const calibrationValuesSum = data.lines
   .map((string) => Number(string.charAt(0) + string.charAt(string.length - 1)))
   .reduce((a, b) => a + b);
 
+const performanceEnd = performance.now();
 console.log(calibrationValuesSum);
+console.log(`Execution time: ${performanceEnd - performanceStart} ms`);
