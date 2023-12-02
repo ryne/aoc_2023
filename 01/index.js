@@ -1,7 +1,6 @@
 const JFile = require('jfile');
-
 const data = new JFile('data.txt');
-const digitsMap = {
+const numbersMap = {
   oneight: '18',
   twone: '21',
   eightwo: '82',
@@ -17,22 +16,20 @@ const digitsMap = {
 };
 
 function convertSubstring(inputString) {
-  // Iterate through the keys (substrings) in the digitsMap
-  for (const key in digitsMap) {
-    if (digitsMap.hasOwnProperty(key)) {
+  // Iterate through the keys (substrings) in the numbersMap
+  for (const number in numbersMap) {
+    if (Object.hasOwn(numbersMap, number))
       // Replace occurrences of the key with its corresponding value in the inputString
-      inputString = inputString.split(key).join(digitsMap[key]);
-    }
+      inputString = inputString.split(number).join(numbersMap[number]);
   }
 
   return inputString;
 }
 
-const result = data.lines
-  .map((line) => convertSubstring(line))
-  .map((line) => line.replace(/\D+/g, ''))
-  .map((line) => (line.length === 1 ? line + line : line))
-  .map((line) => Number(line.charAt(0) + line.charAt(line.length - 1)))
+const calibrationValuesSum = data.lines
+  .map((string) => convertSubstring(string).replace(/\D+/g, ''))
+  .map((string) => (string.length === 1 ? string + string : string))
+  .map((string) => Number(string.charAt(0) + string.charAt(string.length - 1)))
   .reduce((a, b) => a + b);
 
-console.log(result);
+console.log(calibrationValuesSum);
