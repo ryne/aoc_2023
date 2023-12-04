@@ -3,15 +3,15 @@ const data = new JFile('input.txt');
 const gamesArray = data.lines;
 gamesArray.pop(); // Remove blank entry
 
-interface Game {
+type Game = {
   [gameId: number]: Subgame[];
-}
+};
 
-interface Subgame {
+type Subgame = {
   red: number;
   green: number;
   blue: number;
-}
+};
 
 const targetBagAmounts: Subgame = {
   red: 12,
@@ -23,12 +23,12 @@ function parseGameStrings(gameStrings: string[]): Game[] {
   return gameStrings.map((gameString, index) => {
     const gameId = index;
 
-    const subgames: Subgame[] = gameString.split(';').map((subgame) => {
+    const subGames: Subgame[] = gameString.split(';').map((subGame) => {
       const colorRegex = /(\d+)\s*(red|green|blue)?/g;
       let match;
       const colorCounts: Subgame = { red: 0, green: 0, blue: 0 };
 
-      while ((match = colorRegex.exec(subgame)) !== null) {
+      while ((match = colorRegex.exec(subGame)) !== null) {
         const [, count, color = ''] = match;
         colorCounts[color as keyof Subgame] = parseInt(count, 10);
       }
@@ -40,7 +40,7 @@ function parseGameStrings(gameStrings: string[]): Game[] {
       };
     });
 
-    const parsedGame: Game = { [gameId]: subgames };
+    const parsedGame: Game = { [gameId]: subGames };
     return parsedGame;
   });
 }
