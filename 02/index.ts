@@ -47,9 +47,7 @@ function parseGameStrings(gameStrings: string[]): Game[] {
   });
 }
 
-const formattedGamesObj = parseGameStrings(gamesArray);
-
-const filteredData: number = formattedGamesObj
+const sumGameIDs: number = parseGameStrings(gamesArray)
   .map((obj, index) => {
     const [id, subgames] = Object.entries(obj)[0];
 
@@ -59,10 +57,9 @@ const filteredData: number = formattedGamesObj
       );
     });
 
-    return allSubgamesPass ? index : -1;
+    return allSubgamesPass ? index + 1 : -1;
   })
-  .filter((index) => index !== -1)
-  .map((index) => index + 1)
-  .reduce((a, b) => a + b);
+  .filter((index) => index !== -1) // Remove invalid games.
+  .reduce((a, b) => a + b); // Add all game IDs.
 
-console.log(filteredData);
+console.log(sumGameIDs);
