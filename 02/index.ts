@@ -1,9 +1,7 @@
 const JFile = require('jfile');
 const data = new JFile('input.txt');
 const gamesArray = data.lines;
-
-// Remove blank entry
-gamesArray.pop();
+gamesArray.pop(); // Remove blank entry
 
 interface Game {
   [gameId: number]: Subgame[];
@@ -47,19 +45,38 @@ function parseGameStrings(gameStrings: string[]): Game[] {
   });
 }
 
-const sumGameIDs: number = parseGameStrings(gamesArray)
-  .map((obj, index) => {
-    const [id, subgames] = Object.entries(obj)[0];
+const gamesObj = parseGameStrings(gamesArray); // Formatted games object.
 
-    const allSubgamesPass = subgames.every((subgame: Subgame) => {
-      return Object.entries(subgame).every(
+// Part one: What is the sum of the IDs of those games?
+const sumGameIDs: number = gamesObj
+  .map((game, i) => {
+    const [id, subGames] = Object.entries(game)[0];
+
+    const allSubgamesPass = subGames.every((subGame: Subgame) => {
+      return Object.entries(subGame).every(
         ([color, count]) => count <= targetBagAmounts[color as keyof Subgame]
       );
     });
 
-    return allSubgamesPass ? index + 1 : -1;
+    return allSubgamesPass ? i + 1 : -1;
   })
-  .filter((index) => index !== -1) // Remove invalid games.
+  .filter((i) => i !== -1) // Remove invalid games.
   .reduce((a, b) => a + b); // Add all game IDs.
 
-console.log(sumGameIDs);
+// Part two: What is the sum of the power of these sets?
+const minGameCubes: Subgame[] = gamesObj.flatMap((game: Game) =>
+  Object.values(game).map((subGame: Subgame[]) =>
+    subGame.reduce((a, b) => ({
+      red: Math.max(a.red, b.red),
+      green: Math.max(a.green, b.green),
+      blue: Math.max(a.blue, b.blue),
+    }))
+  )
+);
+
+const sumSetsPower = minGameCubes
+  .map((subGame) => subGame.red * subGame.green * subGame.blue) // Get cube power of each game.
+  .reduce((a, b) => a + b); // Add all cube powers.
+
+console.log(`Sum of Game IDs: ${sumGameIDs}`);
+console.log(`Sum of Minimum Cube Set Powers: ${JSON.stringify(sumSetsPower)}`);
