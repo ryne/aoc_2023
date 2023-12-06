@@ -1,7 +1,6 @@
-const JFile = require('jfile');
-const data = new JFile('input.txt');
-const gamesArray = data.lines;
-gamesArray.pop(); // Remove blank entry
+import { loadPuzzleInput } from '../helpers';
+const data = await loadPuzzleInput('input.txt');
+data.pop(); // Remove blank entry
 
 type Game = {
   [gameId: number]: Subgame[];
@@ -45,7 +44,7 @@ function parseGameStrings(gameStrings: string[]): Game[] {
   });
 }
 
-const gamesObj = parseGameStrings(gamesArray); // Formatted games object.
+const gamesObj = parseGameStrings(data); // Formatted games object.
 
 // Part one: What is the sum of the IDs of those games?
 const sumGameIDs: number = gamesObj
@@ -78,5 +77,5 @@ const sumSetsPower = minGameCubes
   .map((subGame) => subGame.red * subGame.green * subGame.blue) // Get cube power of each game.
   .reduce((a, b) => a + b); // Add all cube powers.
 
-console.log(`Sum of Game IDs: ${sumGameIDs}`);
-console.log(`Sum of Minimum Cube Set Powers: ${JSON.stringify(sumSetsPower)}`);
+console.log(`Sum of Game IDs (1): ${sumGameIDs}`);
+console.log(`Sum of Minimum Cube Set Powers (2): ${sumSetsPower}`);
