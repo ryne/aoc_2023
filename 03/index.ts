@@ -1,7 +1,14 @@
 import { loadPuzzleInput } from '../helpers';
 const inputArray = await loadPuzzleInput('input.txt');
 
-function extractNumbersInfoForArray(inputArray: string[]): any {
+type NumbersInfo = {
+  startCol: number | null;
+  endCol: number;
+  value: string;
+  match: boolean;
+};
+
+function extractNumbersInfoForArray(inputArray: string[]): NumbersInfo[][][] {
   const resultArray: any = [];
 
   inputArray.forEach((inputString) => {
@@ -61,13 +68,16 @@ function extractNumbersInfoForArray(inputArray: string[]): any {
   return resultArray;
 }
 
-const output: number[][][] = extractNumbersInfoForArray(inputArray);
+const output: NumbersInfo[][][] = extractNumbersInfoForArray(inputArray);
 
 function isMatch(str: string): boolean {
   return str.match(/[^.0-9]/) !== null;
 }
 
-function filterOutput(output: number[][][], inputArray: string[]): any[][][] {
+function filterOutput(
+  output: NumbersInfo[][][],
+  inputArray: string[]
+): NumbersInfo[][][] {
   return output.map((arr, index) => {
     const currentString = inputArray[index];
     const previousString = index > 0 ? inputArray[index - 1] : null;
@@ -102,10 +112,10 @@ function filterOutput(output: number[][][], inputArray: string[]): any[][][] {
   });
 }
 
-const filteredOutput: any[][] = filterOutput(output, inputArray);
+const filteredOutput: NumbersInfo[][][] = filterOutput(output, inputArray);
 
 const matchingPartNumbersSum: number = filteredOutput
-  .flatMap((arr) => {
+  .flatMap((arr: any[]) => {
     return arr.filter((obj) => obj.match).map((obj) => parseInt(obj.value, 10));
   })
   .reduce((sum, value) => sum + value, 0);
