@@ -1,6 +1,5 @@
 import { loadPuzzleInput } from '../helpers';
 const data = await loadPuzzleInput('input.txt');
-data.pop(); // Remove blank entry
 
 type Game = {
   [gameId: number]: Subgame[];
