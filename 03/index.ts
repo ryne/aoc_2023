@@ -3,7 +3,7 @@ const inputArray = await loadPuzzleInput('input.txt');
 
 type NumbersInfo = {
   startCol: number | null;
-  endCol: number;
+  endCol: number | null;
   value: string;
   match: boolean;
 };
@@ -12,12 +12,7 @@ function extractNumbersInfoForArray(inputArray: string[]): NumbersInfo[][][] {
   const resultArray: any = [];
 
   inputArray.forEach((inputString) => {
-    const numbersInfo: {
-      startCol: number | null;
-      endCol: number;
-      value: string;
-      match: boolean;
-    }[] = [];
+    const numbersInfo: NumbersInfo[] = [];
 
     let currentNumber = '';
     let startCol: number | null = null;
@@ -25,17 +20,13 @@ function extractNumbersInfoForArray(inputArray: string[]): NumbersInfo[][][] {
     for (let col = 0; col < inputString.length; col++) {
       const char = inputString[col];
 
-      if (!isNaN(parseInt(char)) && char !== ' ') {
-        // If the character is a digit, start or continue building the currentNumber
+      if (!isNaN(parseInt(char))) {
         if (startCol === null) {
-          // If startCol is null, it means this is the start of a new number
           startCol = col;
         }
         currentNumber += char;
       } else {
-        // If the character is not a digit, check if we were building a number
         if (currentNumber !== '') {
-          // If we were building a number, save the information in the numbersInfo array
           const endCol = col - 1;
           numbersInfo.push({
             startCol,
@@ -44,14 +35,12 @@ function extractNumbersInfoForArray(inputArray: string[]): NumbersInfo[][][] {
             match: false,
           });
 
-          // Reset for the next number
           currentNumber = '';
           startCol = null;
         }
       }
     }
 
-    // Check for the last number in case the string ends with a number
     if (currentNumber !== '') {
       const endCol = inputString.length - 1;
       numbersInfo.push({
@@ -87,11 +76,9 @@ function filterOutput(
     return arr.map((obj) => {
       const { startCol, endCol }: any = obj;
 
-      // Adjust column range based on conditions
       const adjustedStartCol = Math.max(0, startCol - 1);
       const adjustedEndCol = Math.min(currentString.length - 1, endCol + 1);
 
-      // Extract the substring based on the adjusted column range
       const mergedString =
         (previousString
           ? previousString.substring(adjustedStartCol, adjustedEndCol + 1)
@@ -101,7 +88,6 @@ function filterOutput(
           ? nextString.substring(adjustedStartCol, adjustedEndCol + 1)
           : '');
 
-      // Check if any characters in the merged string match conditions
       const isMatched = isMatch(mergedString);
 
       return {
@@ -121,3 +107,60 @@ const matchingPartNumbersSum: number = filteredOutput
   .reduce((sum, value) => sum + value, 0);
 
 console.log(`Sum of all matching part numbers (1): ${matchingPartNumbersSum}`);
+
+// Part 2
+
+function findAsterisks(inputArray: string[]): { asteriskCol: number }[][] {
+  return inputArray.map((inputString) => {
+    const asteriskPositions: { asteriskCol: number }[] = [];
+
+    for (let col = 0; col < inputString.length; col++) {
+      const char = inputString[col];
+
+      if (char === '*') {
+        asteriskPositions.push({ asteriskCol: col });
+      }
+    }
+
+    return asteriskPositions;
+  });
+}
+
+const asteriskPositions = findAsterisks(inputArray);
+
+const gearMatches: any[] = asteriskPositions.map((subArray, subArrayIndex) =>
+  subArray.map((obj) => {
+    let matches: number[] = [];
+    for (let i = -1; i < 2; i++) {
+      for (let o = 0; o < filteredOutput[subArrayIndex + i].length; o++) {
+        let a: any = filteredOutput[subArrayIndex + i][o];
+        let b: any = obj.asteriskCol;
+        if (a) {
+          if (
+            a.startCol === b ||
+            a.endCol === b ||
+            a.startCol === b - 1 ||
+            a.endCol === b - 1 ||
+            a.startCol === b + 1 ||
+            a.endCol === b + 1
+          ) {
+            matches.push(parseInt(a.value));
+          }
+        }
+      }
+    }
+
+    if (matches.length === 2) {
+      let gearRatio: number = matches.reduce((a, b) => a * b);
+      return { gearRatio };
+    }
+  })
+);
+
+const gearRatiosSum = gearMatches
+  .flat()
+  .filter((match) => match !== undefined)
+  .map((match) => match.gearRatio)
+  .reduce((a, b) => a + b);
+
+console.log(`Sum of all gear ratios (2): ${gearRatiosSum}`);
