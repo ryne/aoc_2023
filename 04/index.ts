@@ -42,4 +42,4 @@ const checkScratchCards: ScratchCard[] = inputArray.map((card: string) => {
 
 const totalPoints = checkScratchCards.reduce((a, c) => a + (c.points ?? 0), 0);
 
-console.log(totalPoints);
+console.log(`Total points of all winning numbers: ${totalPoints}`);
